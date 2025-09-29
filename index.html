@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Perfect TimeLine</title>
-
+  <title>Perfect TimeLine with Full Navigation</title>
 
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
 
@@ -19,16 +18,36 @@
       --value-bright: #9eefff;
     }
 
-    body {
+    * {
       margin: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      background: 
-          linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-          url("img/architecture.png") no-repeat 28rem 14px / 78rem auto,
-          linear-gradient(to top, #001633, #004080) !important;
+      padding: 0;
+      box-sizing: border-box;
     }
-    body::-webkit-scrollbar { display: none; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      scroll-snap-type: y mandatory;
+      overflow-x: hidden;
+    }
+
+    .section {
+      height: 100vh;
+      width: 100vw;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .timeline-section {
+      overflow: hidden;
+      scroll-snap-align: start;
+     }
 
     .time-line {
       overflow-x: auto;
@@ -37,6 +56,7 @@
       padding: 2rem 15rem;
       align-items: flex-start;
       width: 100vw;
+      height: 100vh;
     }
     .time-line::-webkit-scrollbar { display: none; }
 
@@ -242,7 +262,7 @@
       opacity: 0;
       z-index: 35;
       white-space: nowrap;
-      transition: color .25s ease, text-shadow .25s ease, transform .25s ease; /* hover effect */
+      transition: color .25s ease, text-shadow .25s ease, transform .25s ease;
     }
     .year-label.top-small { top: -55px; }
     .year-label.bottom-small { top: 70px; }
@@ -250,7 +270,6 @@
       opacity: 1;
       animation: fadeIn 0.5s ease-out forwards;
     }
-
  
     .point:hover .year-label,
     .project-data:hover ~ .year-label {
@@ -279,8 +298,6 @@
       left: 50%;
       transform: translateX(-50%) scale(1);
       z-index: 20;
-
-
       transition:
         transform .25s ease,
         background-color .25s ease,
@@ -301,7 +318,6 @@
       to   { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
-
     .point:hover .project-data,
     .project-data:hover {
       transform: translateX(-50%) scale(1.05); 
@@ -313,7 +329,6 @@
         0 0 18px var(--panel-glow);
       color: #e7f2f7;
     }
-
 
     .project-data .data-header {
       display: flex;
@@ -343,7 +358,6 @@
       transition: color .25s ease, border-color .25s ease;
     }
 
-
     .point:hover .project-data .data-header,
     .project-data:hover .data-header {
       color: #d9ecf5;
@@ -371,7 +385,6 @@
     .project-data .data-value { font-weight: bold; color: #00ffff; transition: color .25s ease; }
     .project-data .projects-value { font-size: 20px; color: var(--accent); transition: color .25s ease; }
     .project-data .value-cr { font-size: 16px; color: var(--accent); transition: color .25s ease; }
-
 
     .point:hover .project-data .data-label,
     .project-data:hover .data-label {
@@ -407,7 +420,6 @@
       overflow: hidden;
       transition: color .25s ease;
     }
-
     
     .point:hover .project-data .major-projects,
     .project-data:hover .major-projects {
@@ -418,7 +430,6 @@
     .project-data:hover .projects-list {
       color: #aaf7ff;
     }
-
     
     .project-data.show .data-header .data-title {
       animation: typeWriter 0.8s steps(20, end) 0.9s forwards,
@@ -468,7 +479,6 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-
     @media (prefers-reduced-motion: reduce) {
       .project-data, .year-label { transition: none !important; }
       .point:hover .project-data, .project-data:hover {
@@ -478,266 +488,269 @@
   </style>
 </head>
 <body>
-  <section class="time-line" id="timeline-scroll">
-    <div class="start-point">
-      <div class="line-text">Beginning of Journey</div>
-    </div>
 
-    <div class="point" data-circle="1" data-year="2005">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2005</div>
-      <div class="line-text">Foundation Era</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-building-2-line" aria-hidden="true"></i>
-          <span class="data-title">Construction Milestone</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">05</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹300.35 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Residential Complex Alpha • Commercial Plaza Beta</div>
+  <section class="section timeline-section" style="background-color: transparent;">
+    <div class="time-line" id="timeline-scroll">
+      <div class="start-point">
+        <div class="line-text">Beginning of Journey</div>
+      </div>
+
+      <div class="point" data-circle="1" data-year="2005">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2005</div>
+        <div class="line-text">Foundation Era</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-building-2-line" aria-hidden="true"></i>
+            <span class="data-title">Construction Milestone</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">05</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹300.35 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Residential Complex Alpha • Commercial Plaza Beta</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="2" data-year="2007">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2007</div>
-      <div class="line-text">Growth Phase</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-tools-line" aria-hidden="true"></i>
-          <span class="data-title">Infrastructure Growth</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">08</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹450.20 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Metro Station Hub • Shopping Complex Gateway</div>
+      <div class="point" data-circle="2" data-year="2007">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2007</div>
+        <div class="line-text">Growth Phase</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-tools-line" aria-hidden="true"></i>
+            <span class="data-title">Infrastructure Growth</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">08</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹450.20 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Metro Station Hub • Shopping Complex Gateway</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="3" data-year="2009">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2009</div>
-      <div class="line-text">Urban Focus</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-community-line" aria-hidden="true"></i>
-          <span class="data-title">Urban Development</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">12</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹680.75 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Highway Bridge Delta • Residential Tower Prime</div>
+      <div class="point" data-circle="3" data-year="2009">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2009</div>
+        <div class="line-text">Urban Focus</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-community-line" aria-hidden="true"></i>
+            <span class="data-title">Urban Development</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">12</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹680.75 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Highway Bridge Delta • Residential Tower Prime</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="4" data-year="2010">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2010</div>
-      <div class="line-text">Commercial Boom</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-store-2-line" aria-hidden="true"></i>
-          <span class="data-title">Commercial Expansion</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">15</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹920.40 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Airport Terminal • IT Park Horizon</div>
+      <div class="point" data-circle="4" data-year="2010">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2010</div>
+        <div class="line-text">Commercial Boom</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-store-2-line" aria-hidden="true"></i>
+            <span class="data-title">Commercial Expansion</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">15</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹920.40 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Airport Terminal • IT Park Horizon</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="5" data-year="2011">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2011</div>
-      <div class="line-text">Sports & Events</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-trophy-line" aria-hidden="true"></i>
-          <span class="data-title">Sports & Convention</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">18</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹1250.60 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Sports Stadium Arena • Convention Center Elite</div>
+      <div class="point" data-circle="5" data-year="2011">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2011</div>
+        <div class="line-text">Sports & Events</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-trophy-line" aria-hidden="true"></i>
+            <span class="data-title">Sports & Convention</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">18</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹1250.60 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Sports Stadium Arena • Convention Center Elite</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="6" data-year="2012">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2012</div>
-      <div class="line-text">Healthcare Vision</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-hospital-line" aria-hidden="true"></i>
-          <span class="data-title">Healthcare & Business</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">22</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹1580.85 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Business District Core • Medical College Campus</div>
+      <div class="point" data-circle="6" data-year="2012">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2012</div>
+        <div class="line-text">Healthcare Vision</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-hospital-line" aria-hidden="true"></i>
+            <span class="data-title">Healthcare & Business</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">22</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹1580.85 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Business District Core • Medical College Campus</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="7" data-year="2016">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2016</div>
-      <div class="line-text">Smart City Era</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-base-station-line" aria-hidden="true"></i>
-          <span class="data-title">Smart Infrastructure</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">28</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹2150.30 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Smart City Phase 1 • Port Expansion Project</div>
+      <div class="point" data-circle="7" data-year="2016">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2016</div>
+        <div class="line-text">Smart City Era</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-base-station-line" aria-hidden="true"></i>
+            <span class="data-title">Smart Infrastructure</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">28</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹2150.30 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Smart City Phase 1 • Port Expansion Project</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="8" data-year="2020">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2020</div>
-      <div class="line-text">Green Revolution</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-leaf-line" aria-hidden="true"></i>
-          <span class="data-title">Green Revolution</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">35</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹3200.95 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Metro Line Extension • Green Building Initiative</div>
+      <div class="point" data-circle="8" data-year="2020">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2020</div>
+        <div class="line-text">Green Revolution</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-leaf-line" aria-hidden="true"></i>
+            <span class="data-title">Green Revolution</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">35</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹3200.95 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Metro Line Extension • Green Building Initiative</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="9" data-year="2022">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2022</div>
-      <div class="line-text">Renewable Future</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-sun-line" aria-hidden="true"></i>
-          <span class="data-title">Renewable Energy</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">42</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹4500.70 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Solar Park Mega • Industrial Complex Zone</div>
+      <div class="point" data-circle="9" data-year="2022">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2022</div>
+        <div class="line-text">Renewable Future</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-sun-line" aria-hidden="true"></i>
+            <span class="data-title">Renewable Energy</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">42</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹4500.70 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Solar Park Mega • Industrial Complex Zone</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="point" data-circle="10" data-year="2024">
-      <div class="inner-dot"></div>
-      <div class="center-dot"></div>
-      <div class="bottom-line"></div>
-      <div class="year-label">2024</div>
-      <div class="project-data">
-        <div class="data-header">
-          <i class="ri-cpu-line" aria-hidden="true"></i>
-          <span class="data-title">Future Technology</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Projects:</span>
-          <span class="data-value projects-value">48</span>
-        </div>
-        <div class="data-row">
-          <span class="data-label">Value:</span>
-          <span class="data-value value-cr">₹5800.45 CR</span>
-        </div>
-        <div class="major-projects">
-          <div class="data-label">Major Projects:</div>
-          <div class="projects-list">Tech Hub Innovation • Sustainable Housing Project</div>
+      <div class="point" data-circle="10" data-year="2024">
+        <div class="inner-dot"></div>
+        <div class="center-dot"></div>
+        <div class="bottom-line"></div>
+        <div class="year-label">2024</div>
+        <div class="project-data">
+          <div class="data-header">
+            <i class="ri-cpu-line" aria-hidden="true"></i>
+            <span class="data-title">Future Technology</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Projects:</span>
+            <span class="data-value projects-value">48</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Value:</span>
+            <span class="data-value value-cr">₹5800.45 CR</span>
+          </div>
+          <div class="major-projects">
+            <div class="data-label">Major Projects:</div>
+            <div class="projects-list">Tech Hub Innovation • Sustainable Housing Project</div>
+          </div>
         </div>
       </div>
     </div>
@@ -765,31 +778,21 @@
 
     function initializeTimeline() {
       animatedConnections.clear();
-
       circles.forEach(circle => {
         const centerDot = circle.querySelector('.center-dot');
         centerDot.classList.remove('animate');
         circle.classList.remove('extend-line', 'extend-vertical-lines', 'top-extended');
-
         const lineText = circle.querySelector('.line-text');
         const yearLabel = circle.querySelector('.year-label');
         const projectData = circle.querySelector('.project-data');
         const bottomLine = circle.querySelector('.bottom-line');
-
         if (lineText) lineText.classList.remove('show');
         if (yearLabel) yearLabel.classList.remove('show', 'top-small', 'bottom-small');
         if (projectData) projectData.classList.remove('show', 'top-big', 'bottom-big');
         if (bottomLine) bottomLine.classList.remove('bottom-small');
       });
-
       checkVisibleCircles();
     }
-
-    scrollContainer.addEventListener('wheel', event => {
-      event.preventDefault();
-      scrollContainer.scrollLeft += event.deltaY;
-      checkVisibleCircles();
-    });
 
     function isElementVisible(el, container) {
       const elRect = el.getBoundingClientRect();
@@ -809,7 +812,6 @@
           if (index > 0) {
             const prevCircle = circles[index - 1];
             prevCircle.classList.add('extend-line');
-
             setTimeout(() => {
               const lineText = prevCircle.querySelector('.line-text');
               if (lineText) {
@@ -817,7 +819,6 @@
               }
             }, 1400);
           }
-
           currentCircle.classList.add('extend-vertical-lines');
           const yearLabel = currentCircle.querySelector('.year-label');
           const projectData = currentCircle.querySelector('.project-data');
@@ -832,13 +833,11 @@
             yearLabel.classList.add('bottom-small', 'show');
             projectData.classList.add('top-big', 'show');
           }
-
           setTimeout(() => {
             if (index % 2 === 0) {
               yearLabel.classList.add('top-small', 'show');
             }
           }, 300);
-
           animatedConnections.add(index);
         }, 600);
       }
@@ -853,6 +852,101 @@
     }
 
     setTimeout(checkVisibleCircles, 900);
+
+    let scrollAccumulation = 0;
+    let lastScrollDirection = 0;
+    const BOUNDARY_THRESHOLD = 15;
+    const SCROLL_ACCUMULATION_NEEDED = 180;
+    let isTransitioning = false;
+
+    function findTimelineIndex() {
+      const sections = document.querySelectorAll('.section');
+      for (let i = 0; i < sections.length; i++) {
+        if (sections[i].classList.contains('timeline-section')) {
+          return i;
+        }
+      }
+      return 0;
+    }
+
+    function getCurrentSection() {
+      const sections = document.querySelectorAll('.section');
+      const viewportTop = window.pageYOffset;
+      const viewportHeight = window.innerHeight;
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        const sectionTop = section.offsetTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+        if (viewportTop >= sectionTop - viewportHeight/2 && 
+            viewportTop < sectionBottom - viewportHeight/2) {
+          return i;
+        }
+      }
+      return findTimelineIndex();
+    }
+
+    function transitionToSection(sectionIndex) {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      const sections = document.querySelectorAll('.section');
+      if (sectionIndex >= 0 && sectionIndex < sections.length) {
+        sections[sectionIndex].scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+        setTimeout(() => {
+          isTransitioning = false;
+          scrollAccumulation = 0;
+        }, 1200);
+      }
+    }
+
+    scrollContainer.addEventListener('wheel', event => {
+      event.preventDefault();
+      const oldScrollLeft = scrollContainer.scrollLeft;
+      scrollContainer.scrollLeft += event.deltaY;
+      const newScrollLeft = scrollContainer.scrollLeft;
+      const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+      checkVisibleCircles();
+      
+      const currentSectionIndex = getCurrentSection();
+      const timelineIndex = findTimelineIndex();
+      if (currentSectionIndex !== timelineIndex) return;
+      
+      const scrollDirection = event.deltaY;
+      const sections = document.querySelectorAll('.section');
+      
+      if (Math.sign(scrollDirection) === Math.sign(lastScrollDirection)) {
+        scrollAccumulation += Math.abs(scrollDirection);
+      } else {
+        scrollAccumulation = Math.abs(scrollDirection);
+      }
+      lastScrollDirection = scrollDirection;
+      
+      if (newScrollLeft <= BOUNDARY_THRESHOLD && scrollDirection < 0) {
+        if (timelineIndex > 0 && scrollAccumulation >= SCROLL_ACCUMULATION_NEEDED) {
+          transitionToSection(timelineIndex - 1);
+          return;
+        }
+      }
+      else if (newScrollLeft >= maxScrollLeft - BOUNDARY_THRESHOLD && scrollDirection > 0) {
+        if (timelineIndex < sections.length - 1 && scrollAccumulation >= SCROLL_ACCUMULATION_NEEDED) {
+          transitionToSection(timelineIndex + 1);
+          return;
+        }
+      }
+      else {
+        scrollAccumulation = 0;
+      }
+    });
+
+    let resetTimeout;
+    scrollContainer.addEventListener('wheel', () => {
+      clearTimeout(resetTimeout);
+      resetTimeout = setTimeout(() => {
+        scrollAccumulation = 0;
+      }, 1500);
+    });
   </script>
 </body>
 </html>
