@@ -759,98 +759,12 @@
 
 
   <script>
-<<<<<<< Updated upstream
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-    window.addEventListener('beforeunload', function() {
-      sessionStorage.setItem('timelineScrollPos', '0');
-    });
-    window.addEventListener('load', function() {
-      const scrollContainer = document.getElementById('timeline-scroll');
-      scrollContainer.scrollLeft = 0;
-      sessionStorage.removeItem('timelineScrollPos');
-      setTimeout(function() {
-        initializeTimeline();
-      }, 100);
-    });
-
-    const scrollContainer = document.getElementById('timeline-scroll');
-    const circles = [...document.querySelectorAll('.point')];
-    let animatedConnections = new Set();
-
-    function initializeTimeline() {
-      animatedConnections.clear();
-      circles.forEach(circle => {
-        const centerDot = circle.querySelector('.center-dot');
-        centerDot.classList.remove('animate');
-        circle.classList.remove('extend-line', 'extend-vertical-lines', 'top-extended');
-        const lineText = circle.querySelector('.line-text');
-        const yearLabel = circle.querySelector('.year-label');
-        const projectData = circle.querySelector('.project-data');
-        const bottomLine = circle.querySelector('.bottom-line');
-        if (lineText) lineText.classList.remove('show');
-        if (yearLabel) yearLabel.classList.remove('show', 'top-small', 'bottom-small');
-        if (projectData) projectData.classList.remove('show', 'top-big', 'bottom-big');
-        if (bottomLine) bottomLine.classList.remove('bottom-small');
-      });
-      checkVisibleCircles();
-    }
-
-    function isElementVisible(el, container) {
-      const elRect = el.getBoundingClientRect();
-      const contRect = container.getBoundingClientRect();
-      return (elRect.left >= contRect.left && elRect.left <= contRect.right) ||
-             (elRect.right >= contRect.left && elRect.right <= contRect.right) ||
-             (elRect.left <= contRect.left && elRect.right >= contRect.right);
-    }
-
-    function animateConnection(index) {
-      if (animatedConnections.has(index)) return;
-      const currentCircle = circles[index];
-      const centerDot = currentCircle.querySelector('.center-dot');
-      if (!centerDot.classList.contains('animate')) {
-        centerDot.classList.add('animate');
-        setTimeout(() => {
-          if (index > 0) {
-            const prevCircle = circles[index - 1];
-            prevCircle.classList.add('extend-line');
-            setTimeout(() => {
-              const lineText = prevCircle.querySelector('.line-text');
-              if (lineText) {
-                lineText.classList.add('show');
-              }
-            }, 1400);
-          }
-          currentCircle.classList.add('extend-vertical-lines');
-          const yearLabel = currentCircle.querySelector('.year-label');
-          const projectData = currentCircle.querySelector('.project-data');
-          if (index % 2 === 0) {
-            const bottomLine = currentCircle.querySelector('.bottom-line');
-            bottomLine.classList.remove('bottom-small');
-            projectData.classList.add('bottom-big', 'show');
-          } else {
-            currentCircle.classList.add('top-extended');
-            const bottomLine = currentCircle.querySelector('.bottom-line');
-            bottomLine.classList.add('bottom-small');
-            yearLabel.classList.add('bottom-small', 'show');
-            projectData.classList.add('top-big', 'show');
-          }
-          setTimeout(() => {
-            if (index % 2 === 0) {
-              yearLabel.classList.add('top-small', 'show');
-            }
-          }, 300);
-          animatedConnections.add(index);
-        }, 600);
-=======
   (function($) {
       'use strict';
       
       if (typeof $ === 'undefined' || typeof jQuery === 'undefined') {
           console.error('❌ TIMELINE ERROR: jQuery not loaded');
           return;
->>>>>>> Stashed changes
       }
       
       console.log('🚀 TIMELINE: Comprehensive fix version initialized');
@@ -1528,109 +1442,8 @@
           }
           setTimeout(checkVisibleCircles, 100);
       });
-<<<<<<< Updated upstream
-    }
-
-    setTimeout(checkVisibleCircles, 900);
-
-    let scrollAccumulation = 0;
-    let lastScrollDirection = 0;
-    const BOUNDARY_THRESHOLD = 15;
-    const SCROLL_ACCUMULATION_NEEDED = 180;
-    let isTransitioning = false;
-
-    function findTimelineIndex() {
-      const sections = document.querySelectorAll('.section');
-      for (let i = 0; i < sections.length; i++) {
-        if (sections[i].classList.contains('timeline-section')) {
-          return i;
-        }
-      }
-      return 0;
-    }
-
-    function getCurrentSection() {
-      const sections = document.querySelectorAll('.section');
-      const viewportTop = window.pageYOffset;
-      const viewportHeight = window.innerHeight;
-      for (let i = 0; i < sections.length; i++) {
-        const section = sections[i];
-        const sectionTop = section.offsetTop;
-        const sectionBottom = sectionTop + section.offsetHeight;
-        if (viewportTop >= sectionTop - viewportHeight/2 && 
-            viewportTop < sectionBottom - viewportHeight/2) {
-          return i;
-        }
-      }
-      return findTimelineIndex();
-    }
-
-    function transitionToSection(sectionIndex) {
-      if (isTransitioning) return;
-      isTransitioning = true;
-      const sections = document.querySelectorAll('.section');
-      if (sectionIndex >= 0 && sectionIndex < sections.length) {
-        sections[sectionIndex].scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
-        setTimeout(() => {
-          isTransitioning = false;
-          scrollAccumulation = 0;
-        }, 1200);
-      }
-    }
-
-    scrollContainer.addEventListener('wheel', event => {
-      event.preventDefault();
-      const oldScrollLeft = scrollContainer.scrollLeft;
-      scrollContainer.scrollLeft += event.deltaY;
-      const newScrollLeft = scrollContainer.scrollLeft;
-      const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-      checkVisibleCircles();
-      
-      const currentSectionIndex = getCurrentSection();
-      const timelineIndex = findTimelineIndex();
-      if (currentSectionIndex !== timelineIndex) return;
-      
-      const scrollDirection = event.deltaY;
-      const sections = document.querySelectorAll('.section');
-      
-      if (Math.sign(scrollDirection) === Math.sign(lastScrollDirection)) {
-        scrollAccumulation += Math.abs(scrollDirection);
-      } else {
-        scrollAccumulation = Math.abs(scrollDirection);
-      }
-      lastScrollDirection = scrollDirection;
-      
-      if (newScrollLeft <= BOUNDARY_THRESHOLD && scrollDirection < 0) {
-        if (timelineIndex > 0 && scrollAccumulation >= SCROLL_ACCUMULATION_NEEDED) {
-          transitionToSection(timelineIndex - 1);
-          return;
-        }
-      }
-      else if (newScrollLeft >= maxScrollLeft - BOUNDARY_THRESHOLD && scrollDirection > 0) {
-        if (timelineIndex < sections.length - 1 && scrollAccumulation >= SCROLL_ACCUMULATION_NEEDED) {
-          transitionToSection(timelineIndex + 1);
-          return;
-        }
-      }
-      else {
-        scrollAccumulation = 0;
-      }
-    });
-
-    let resetTimeout;
-    scrollContainer.addEventListener('wheel', () => {
-      clearTimeout(resetTimeout);
-      resetTimeout = setTimeout(() => {
-        scrollAccumulation = 0;
-      }, 1500);
-    });
-=======
       
   })(jQuery);
->>>>>>> Stashed changes
   </script>
 
 </body>
