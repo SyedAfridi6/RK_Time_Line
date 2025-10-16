@@ -756,7 +756,10 @@
     </div>
   </section>
 
+
+
   <script>
+<<<<<<< Updated upstream
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
@@ -840,15 +843,692 @@
           }, 300);
           animatedConnections.add(index);
         }, 600);
+=======
+  (function($) {
+      'use strict';
+      
+      if (typeof $ === 'undefined' || typeof jQuery === 'undefined') {
+          console.error('❌ TIMELINE ERROR: jQuery not loaded');
+          return;
+>>>>>>> Stashed changes
       }
-    }
-
-    function checkVisibleCircles() {
-      circles.forEach((circle, index) => {
-        if (isElementVisible(circle, scrollContainer)) {
-          animateConnection(index);
-        }
+      
+      console.log('🚀 TIMELINE: Comprehensive fix version initialized');
+      
+      // ============================================
+      // CONFIGURATION - OPTIMIZED VALUES
+      // ============================================
+      const CONFIG = {
+          BOUNDARY_THRESHOLD: 30,
+          SCROLL_ACCUMULATION_NEEDED: 60,
+          SCROLL_RESET_DELAY: 400,
+          TRANSITION_DURATION: 1000,
+          TRANSITION_EASING: 'easeInOutCubic',
+          SNAP_DISTANCE: 150,
+          MIN_SCROLL_DELTA: 2,
+          MOBILE_ADMIN_BAR_HEIGHT: 46,
+          DESKTOP_ADMIN_BAR_HEIGHT: 32,
+          MAP_SECTION_ID: '756f69f',
+          LOCK_COOLDOWN: 1500,
+          UNLOCK_GRACE_PERIOD: 500
+      };
+      
+      // ============================================
+      // STATE VARIABLES
+      // ============================================
+      let scrollContainer;
+      let circles;
+      let timelineSection;
+      let $timelineWrapper;
+      let animatedConnections = new Set();
+      let scrollAccumulation = 0;
+      let lastScrollDirection = 0;
+      let isTransitioning = false;
+      let isTimelineLocked = false;
+      let viewportLocked = false;
+      let scrollResetTimeout;
+      let isWordPress = false;
+      let adminBarHeight = 0;
+      let preventScroll = false;
+      let lastTransitionTime = 0;
+      let justExitedTimeline = false;
+      let allowPageScroll = false;
+      let lockAttempts = 0;
+      let timelineScrolledPast = false;
+      let hasBeenBelowTimeline = false;  // NEW: Track if user has been below timeline
+      
+      // ============================================
+      // UTILITY FUNCTIONS
+      // ============================================
+      function timeStamp() {
+          return new Date().toLocaleTimeString() + '.' + new Date().getMilliseconds().toString().padStart(3, '0');
+      }
+      
+      function detectWordPressEnvironment() {
+          isWordPress = $('body').hasClass('wp-admin') || 
+                        $('body').hasClass('admin-bar') || 
+                        $('#wpadminbar').length > 0;
+          
+          if (isWordPress) {
+              const $adminBar = $('#wpadminbar');
+              if ($adminBar.length > 0 && $adminBar.is(':visible')) {
+                  adminBarHeight = $adminBar.outerHeight() || 0;
+              } else if ($('body').hasClass('admin-bar')) {
+                  adminBarHeight = $(window).width() <= 782 ? 
+                      CONFIG.MOBILE_ADMIN_BAR_HEIGHT : 
+                      CONFIG.DESKTOP_ADMIN_BAR_HEIGHT;
+              }
+          }
+          
+          return adminBarHeight;
+      }
+      
+      function getScrollOffset() {
+          let offset = adminBarHeight;
+          
+          const $stickyHeader = $('.header-position-absolute, .elementor-sticky, [data-sticky]').first();
+          if ($stickyHeader.length > 0 && $stickyHeader.is(':visible')) {
+              offset += $stickyHeader.outerHeight() || 0;
+          }
+          
+          return Math.max(0, offset);
+      }
+      
+      $.easing.easeInOutCubic = function(x) {
+          return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      };
+      
+      function isInCooldown() {
+          const now = Date.now();
+          return (now - lastTransitionTime) < CONFIG.LOCK_COOLDOWN;
+      }
+      
+      // ============================================
+      // RESET TIMELINE FUNCTION - IMPROVED
+      // ============================================
+      function resetTimelineToStart() {
+          if (!scrollContainer) return;
+          
+          console.log('🔄 Resetting timeline to START position');
+          scrollContainer.scrollLeft = 0;
+          
+          // Reset animations
+          initializeTimeline();
+          
+          // Re-trigger first circle animation
+          setTimeout(() => {
+              checkVisibleCircles();
+          }, 100);
+          
+          // Reset flags
+          timelineScrolledPast = true;
+          hasBeenBelowTimeline = false;
+      }
+      
+      // ============================================
+      // VIEWPORT LOCK SYSTEM - IMPROVED
+      // ============================================
+      function lockViewportToTimeline(direction = 'down') {
+          if (viewportLocked) {
+              console.log('⏸️ Already locked');
+              return;
+          }
+          
+          if (justExitedTimeline || isInCooldown()) {
+              console.log('⏸️ Cooldown active - preventing lock');
+              lockAttempts++;
+              if (lockAttempts > 3) {
+                  console.log('⚠️ Too many lock attempts - resetting');
+                  setTimeout(() => { lockAttempts = 0; }, 1000);
+              }
+              return;
+          }
+          
+          console.log('🔒 LOCKING viewport, direction:', direction);
+          viewportLocked = true;
+          preventScroll = true;
+          allowPageScroll = false;
+          lockAttempts = 0;
+          timelineScrolledPast = false;
+          hasBeenBelowTimeline = false;
+          
+          const scrollOffset = getScrollOffset();
+          const targetTop = $timelineWrapper.offset().top - scrollOffset;
+          
+          $('html, body').stop(true, true);
+          
+          $('html, body').animate({
+              scrollTop: targetTop
+          }, {
+              duration: CONFIG.TRANSITION_DURATION,
+              easing: CONFIG.TRANSITION_EASING,
+              complete: function() {
+                  isTimelineLocked = true;
+                  justExitedTimeline = false;
+                  
+                  if (scrollContainer) {
+                      if (direction === 'down') {
+                          scrollContainer.scrollLeft = 0;
+                          console.log('✅ Locked - START position');
+                      } else {
+                          const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+                          scrollContainer.scrollLeft = maxScroll;
+                          console.log('✅ Locked - END position');
+                      }
+                  }
+              }
+          });
+      }
+      
+      function unlockViewport() {
+          if (!viewportLocked) return;
+          
+          console.log('🔓 UNLOCKING viewport');
+          viewportLocked = false;
+          preventScroll = false;
+          isTimelineLocked = false;
+          scrollAccumulation = 0;
+          lastScrollDirection = 0;
+          justExitedTimeline = true;
+          allowPageScroll = true;
+          lastTransitionTime = Date.now();
+          
+          setTimeout(() => {
+              justExitedTimeline = false;
+              console.log('✅ Grace period ended');
+          }, CONFIG.UNLOCK_GRACE_PERIOD);
+      }
+      
+      function isTimelineInViewport() {
+          if (!timelineSection) return false;
+          
+          const rect = timelineSection.getBoundingClientRect();
+          const viewportHeight = $(window).height();
+          
+          return rect.top <= viewportHeight && rect.bottom >= 0;
+      }
+      
+      function shouldLockToTimeline() {
+          if (!timelineSection) return false;
+          if (viewportLocked || isInCooldown()) return false;
+          
+          const rect = timelineSection.getBoundingClientRect();
+          const offset = getScrollOffset();
+          
+          return rect.top <= offset + CONFIG.SNAP_DISTANCE && 
+                rect.top >= offset - CONFIG.SNAP_DISTANCE;
+      }
+      
+      function isTimelineApproachingFromBottom() {
+          if (!timelineSection) return false;
+          if (viewportLocked || isInCooldown()) return false;
+          
+          const rect = timelineSection.getBoundingClientRect();
+          const viewportHeight = $(window).height();
+          
+          return rect.bottom >= viewportHeight - CONFIG.SNAP_DISTANCE && 
+                rect.bottom <= viewportHeight + CONFIG.SNAP_DISTANCE;
+      }
+      
+      // ============================================
+      // POSITION DETECTION - IMPROVED
+      // ============================================
+      function isTimelineAboveViewport() {
+          if (!timelineSection) return false;
+          const rect = timelineSection.getBoundingClientRect();
+          return rect.bottom < 0;
+      }
+      
+      function isTimelineBelowViewport() {
+          if (!timelineSection) return false;
+          const rect = timelineSection.getBoundingClientRect();
+          const viewportHeight = $(window).height();
+          return rect.top > viewportHeight;
+      }
+      
+      // ============================================
+      // SECTION NAVIGATION
+      // ============================================
+      function findNextElementorSection() {
+          const $parentSection = $timelineWrapper.closest('.elementor-section');
+          
+          if ($parentSection.length === 0) return null;
+          
+          let $next = $parentSection.nextAll('.elementor-section:visible').first();
+          
+          if ($next.length === 0) {
+              $next = $('footer:visible, .site-footer:visible').first();
+          }
+          
+          return $next.length > 0 ? $next : null;
+      }
+      
+      function findMapSection() {
+          const $mapSection = $('.elementor-section[data-id="' + CONFIG.MAP_SECTION_ID + '"]');
+          return $mapSection.length > 0 && $mapSection.is(':visible') ? $mapSection : null;
+      }
+      
+      function transitionToNext() {
+          if (isTransitioning) return;
+          
+          console.log('➡️ Exiting to NEXT section');
+          isTransitioning = true;
+          unlockViewport();
+          
+          const $nextSection = findNextElementorSection();
+          
+          if (!$nextSection) {
+              const targetTop = $(document).height() - $(window).height();
+              $('html, body').stop(true, true).animate({
+                  scrollTop: Math.max(0, targetTop)
+              }, {
+                  duration: CONFIG.TRANSITION_DURATION,
+                  easing: CONFIG.TRANSITION_EASING,
+                  complete: function() {
+                      isTransitioning = false;
+                  }
+              });
+              return;
+          }
+          
+          const targetTop = $nextSection.offset().top;
+          const scrollOffset = getScrollOffset();
+          const finalScrollTop = Math.max(0, targetTop - scrollOffset);
+          
+          $('html, body').stop(true, true).animate({
+              scrollTop: finalScrollTop
+          }, {
+              duration: CONFIG.TRANSITION_DURATION,
+              easing: CONFIG.TRANSITION_EASING,
+              complete: function() {
+                  isTransitioning = false;
+                  console.log('✅ Next section reached');
+              }
+          });
+      }
+      
+      function transitionToMap() {
+          if (isTransitioning) return;
+          
+          console.log('⬅️ Exiting to MAP section');
+          isTransitioning = true;
+          unlockViewport();
+          
+          const $mapSection = findMapSection();
+          
+          if (!$mapSection) {
+              console.error('❌ MAP section not found');
+              isTransitioning = false;
+              return;
+          }
+          
+          const targetTop = $mapSection.offset().top;
+          const scrollOffset = getScrollOffset();
+          const finalScrollTop = Math.max(0, targetTop - scrollOffset);
+          
+          $('html, body').stop(true, true).animate({
+              scrollTop: finalScrollTop
+          }, {
+              duration: CONFIG.TRANSITION_DURATION,
+              easing: CONFIG.TRANSITION_EASING,
+              complete: function() {
+                  isTransitioning = false;
+                  console.log('✅ MAP section reached');
+              }
+          });
+      }
+      
+      // ============================================
+      // TIMELINE ANIMATIONS
+      // ============================================
+      function initializeTimeline() {
+          animatedConnections.clear();
+          
+          circles.each(function(index, circle) {
+              const $circle = $(circle);
+              const centerDot = $circle.find('.center-dot')[0];
+              
+              if (centerDot) {
+                  centerDot.classList.remove('animate');
+              }
+              
+              $circle.removeClass('extend-line extend-vertical-lines top-extended');
+              $circle.find('.line-text').removeClass('show');
+              $circle.find('.year-label').removeClass('show top-small bottom-small');
+              $circle.find('.project-data').removeClass('show top-big bottom-big');
+              $circle.find('.bottom-line').removeClass('bottom-small');
+          });
+      }
+      
+      function isElementVisible(el, container) {
+          if (!el || !container) return false;
+          
+          const elRect = el.getBoundingClientRect();
+          const contRect = container.getBoundingClientRect();
+          
+          return (elRect.left >= contRect.left && elRect.left <= contRect.right) ||
+                (elRect.right >= contRect.left && elRect.right <= contRect.right) ||
+                (elRect.left <= contRect.left && elRect.right >= contRect.right);
+      }
+      
+      function animateConnection(index) {
+          if (animatedConnections.has(index)) return;
+          
+          const currentCircle = circles.eq(index);
+          const centerDot = currentCircle.find('.center-dot')[0];
+          
+          if (centerDot && !centerDot.classList.contains('animate')) {
+              centerDot.classList.add('animate');
+              
+              setTimeout(() => {
+                  if (index > 0) {
+                      const prevCircle = circles.eq(index - 1);
+                      prevCircle.addClass('extend-line');
+                      setTimeout(() => {
+                          prevCircle.find('.line-text').addClass('show');
+                      }, 1400);
+                  }
+                  
+                  currentCircle.addClass('extend-vertical-lines');
+                  const yearLabel = currentCircle.find('.year-label');
+                  const projectData = currentCircle.find('.project-data');
+                  const bottomLine = currentCircle.find('.bottom-line');
+                  
+                  if (index % 2 === 0) {
+                      bottomLine.removeClass('bottom-small');
+                      projectData.addClass('bottom-big show');
+                  } else {
+                      currentCircle.addClass('top-extended');
+                      bottomLine.addClass('bottom-small');
+                      yearLabel.addClass('bottom-small show');
+                      projectData.addClass('top-big show');
+                  }
+                  
+                  setTimeout(() => {
+                      if (index % 2 === 0) {
+                          yearLabel.addClass('top-small show');
+                      }
+                  }, 300);
+                  
+                  animatedConnections.add(index);
+              }, 600);
+          }
+      }
+      
+      function checkVisibleCircles() {
+          if (!scrollContainer) return;
+          
+          circles.each(function(index, circle) {
+              if (isElementVisible(circle, scrollContainer)) {
+                  animateConnection(index);
+              }
+          });
+      }
+      
+      // ============================================
+      // SCROLL HANDLERS - IMPROVED
+      // ============================================
+      let lastPageScrollY = 0;
+      
+      function handleMainPageScroll(event) {
+          if (isTransitioning || justExitedTimeline || allowPageScroll) {
+              return;
+          }
+          
+          const currentScrollY = $(window).scrollTop();
+          const scrollingDown = currentScrollY > lastPageScrollY;
+          lastPageScrollY = currentScrollY;
+          
+          if (!viewportLocked && scrollingDown && isTimelineInViewport() && shouldLockToTimeline()) {
+              console.log('⬇️ Approaching timeline from TOP');
+              event.preventDefault();
+              lockViewportToTimeline('down');
+              return false;
+          }
+          
+          if (!viewportLocked && !scrollingDown && isTimelineInViewport() && isTimelineApproachingFromBottom()) {
+              console.log('⬆️ Approaching timeline from BOTTOM');
+              event.preventDefault();
+              lockViewportToTimeline('up');
+              return false;
+          }
+          
+          if (viewportLocked && preventScroll) {
+              event.preventDefault();
+              return false;
+          }
+      }
+      
+      function initializeScrollNavigation() {
+          if (!scrollContainer) {
+              console.error('❌ Scroll container not available');
+              return;
+          }
+          
+          console.log('🎯 Initializing timeline scroll');
+          
+          $(scrollContainer).off('.timeline-scroll');
+          
+          const scrollHandler = function(event) {
+              if (!viewportLocked && !isTimelineLocked) {
+                  return;
+              }
+              
+              event.preventDefault();
+              event.stopPropagation();
+              
+              if (isTransitioning) {
+                  return false;
+              }
+              
+              const e = event.originalEvent || event;
+              const deltaY = e.deltaY || e.detail || (-e.wheelDelta);
+              
+              if (!deltaY || Math.abs(deltaY) < CONFIG.MIN_SCROLL_DELTA) {
+                  return false;
+              }
+              
+              const oldScrollLeft = scrollContainer.scrollLeft;
+              scrollContainer.scrollLeft += deltaY;
+              const newScrollLeft = scrollContainer.scrollLeft;
+              const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+              
+              checkVisibleCircles();
+              
+              const scrollDirection = deltaY;
+              
+              if (Math.sign(scrollDirection) === Math.sign(lastScrollDirection) || lastScrollDirection === 0) {
+                  scrollAccumulation += Math.abs(scrollDirection);
+              } else {
+                  scrollAccumulation = Math.abs(scrollDirection);
+              }
+              lastScrollDirection = scrollDirection;
+              
+              const isAtLeftBoundary = newScrollLeft <= CONFIG.BOUNDARY_THRESHOLD;
+              const isAtRightBoundary = newScrollLeft >= (maxScrollLeft - CONFIG.BOUNDARY_THRESHOLD);
+              
+              if (isAtLeftBoundary && scrollDirection < 0) {
+                  if (scrollAccumulation >= CONFIG.SCROLL_ACCUMULATION_NEEDED) {
+                      console.log('🚀 Exiting LEFT to MAP');
+                      transitionToMap();
+                      return false;
+                  }
+              }
+              else if (isAtRightBoundary && scrollDirection > 0) {
+                  if (scrollAccumulation >= CONFIG.SCROLL_ACCUMULATION_NEEDED) {
+                      console.log('🚀 Exiting RIGHT to NEXT');
+                      transitionToNext();
+                      return false;
+                  }
+              }
+              else {
+                  scrollAccumulation = 0;
+              }
+              
+              clearTimeout(scrollResetTimeout);
+              scrollResetTimeout = setTimeout(() => {
+                  scrollAccumulation = 0;
+              }, CONFIG.SCROLL_RESET_DELAY);
+              
+              return false;
+          };
+          
+          $(scrollContainer).on('wheel.timeline-scroll DOMMouseScroll.timeline-scroll mousewheel.timeline-scroll', scrollHandler);
+          
+          // Touch support
+          let touchStartX = 0;
+          let touchDeltaX = 0;
+          
+          $(scrollContainer).on('touchstart.timeline-scroll', function(e) {
+              if (!viewportLocked) return;
+              touchStartX = e.originalEvent.touches[0].clientX;
+              touchDeltaX = 0;
+          });
+          
+          $(scrollContainer).on('touchmove.timeline-scroll', function(e) {
+              if (!viewportLocked || isTransitioning) return;
+              
+              const touch = e.originalEvent.touches[0];
+              const deltaX = touch.clientX - touchStartX;
+              
+              e.preventDefault();
+              scrollContainer.scrollLeft -= deltaX;
+              touchStartX = touch.clientX;
+              touchDeltaX = deltaX;
+              checkVisibleCircles();
+          });
+          
+          $(scrollContainer).on('touchend.timeline-scroll', function(e) {
+              if (!viewportLocked || isTransitioning) return;
+              
+              if (Math.abs(touchDeltaX) > 60) {
+                  const currentScrollLeft = scrollContainer.scrollLeft;
+                  const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+                  
+                  if (touchDeltaX > 0 && currentScrollLeft <= CONFIG.BOUNDARY_THRESHOLD) {
+                      transitionToMap();
+                  } else if (touchDeltaX < 0 && currentScrollLeft >= (maxScrollLeft - CONFIG.BOUNDARY_THRESHOLD)) {
+                      transitionToNext();
+                  }
+              }
+          });
+          
+          console.log('✅ Scroll handlers active');
+      }
+      
+      // ============================================
+      // INITIALIZATION
+      // ============================================
+      function waitForElementor(callback) {
+          if (typeof elementorFrontend !== 'undefined') {
+              callback();
+          } else {
+              setTimeout(() => waitForElementor(callback), 100);
+          }
+      }
+      
+      function initializeWhenReady() {
+          $(document).ready(function() {
+              console.log('📄 Initializing timeline system');
+              
+              detectWordPressEnvironment();
+              
+              scrollContainer = document.getElementById('timeline-scroll');
+              if (!scrollContainer) {
+                  console.error('❌ Timeline container not found');
+                  return;
+              }
+              
+              $timelineWrapper = $(scrollContainer).closest('.elementor-widget-container, .timeline-wrapper, [class*="timeline"]').first();
+              
+              if ($timelineWrapper.length === 0) {
+                  $timelineWrapper = $(scrollContainer).parent();
+              }
+              
+              timelineSection = scrollContainer.closest('.elementor-section, [data-elementor-type], section');
+              
+              circles = $('.point');
+              if (circles.length === 0) {
+                  console.error('❌ No timeline points found');
+                  return;
+              }
+              
+              console.log('✅ Timeline points:', circles.length);
+              
+              const $mapCheck = findMapSection();
+              if ($mapCheck) {
+                  console.log('✅ MAP section ready:', CONFIG.MAP_SECTION_ID);
+              } else {
+                  console.warn('⚠️ MAP section not found!');
+              }
+              
+              if (isWordPress && typeof elementorFrontend !== 'undefined') {
+                  waitForElementor(() => {
+                      setTimeout(initializeTimeline, 300);
+                      setTimeout(checkVisibleCircles, 800);
+                      setTimeout(initializeScrollNavigation, 1000);
+                  });
+              } else {
+                  setTimeout(initializeTimeline, 200);
+                  setTimeout(checkVisibleCircles, 600);
+                  setTimeout(initializeScrollNavigation, 800);
+              }
+              
+              $(window).on('wheel.timeline-page DOMMouseScroll.timeline-page mousewheel.timeline-page', handleMainPageScroll);
+              
+              // ============================================
+              // FIXED: Scroll monitor with proper reset logic
+              // ============================================
+              let scrollMonitorTimeout;
+              $(window).on('scroll.timeline-monitor', function() {
+                  clearTimeout(scrollMonitorTimeout);
+                  scrollMonitorTimeout = setTimeout(function() {
+                      const currentScrollY = $(window).scrollTop();
+                      const scrollingDown = currentScrollY > lastPageScrollY;
+                      
+                      // Track if user has been below the timeline
+                      if (isTimelineBelowViewport()) {
+                          hasBeenBelowTimeline = true;
+                      }
+                      
+                      // NEW LOGIC: Reset timeline when scrolling UP past it (going towards MAP)
+                      // This should work REGARDLESS of other state flags
+                      if (!scrollingDown && isTimelineAboveViewport() && hasBeenBelowTimeline && !timelineScrolledPast) {
+                          console.log('🔄 Timeline passed while scrolling UP - Resetting to start');
+                          resetTimelineToStart();
+                      }
+                      
+                      // Only check locking conditions if not in transition states
+                      if (!isTransitioning && !viewportLocked && !justExitedTimeline && !allowPageScroll) {
+                          lastPageScrollY = currentScrollY;
+                          
+                          if (scrollingDown && isTimelineInViewport() && shouldLockToTimeline()) {
+                              lockViewportToTimeline('down');
+                          } else if (!scrollingDown && isTimelineInViewport() && isTimelineApproachingFromBottom()) {
+                              lockViewportToTimeline('up');
+                          }
+                      }
+                  }, 100);
+              });
+              
+              console.log('✅ System ready');
+          });
+      }
+      
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initializeWhenReady);
+      } else {
+          initializeWhenReady();
+      }
+      
+      $(window).on('resize.timeline-scroll orientationchange.timeline-scroll', function() {
+          detectWordPressEnvironment();
+          if (viewportLocked) {
+              unlockViewport();
+          }
+          setTimeout(checkVisibleCircles, 100);
       });
+<<<<<<< Updated upstream
     }
 
     setTimeout(checkVisibleCircles, 900);
@@ -947,6 +1627,11 @@
         scrollAccumulation = 0;
       }, 1500);
     });
+=======
+      
+  })(jQuery);
+>>>>>>> Stashed changes
   </script>
+
 </body>
 </html>
